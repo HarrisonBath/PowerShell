@@ -1,2 +1,0 @@
-# PowerShell
-All PowerShell Scripts
