@@ -51,7 +51,6 @@ Do{
     Switch (Show-Menu $menu "Harrison's Powershell Script" -clear) {
     
         "1"{
-                
                 #Changes AD Description
                 Import-Module activedirectory
                 
@@ -71,17 +70,19 @@ Do{
                                             Sleep -seconds 3
 
                                     }
+                      
+              
             }
 
-        "Q" {
+        "Q"    {
                 #Quits Script
                 Write-Host "Goodbye" -ForegroundColor Green
                 Return
-            }
+               }
 
                         Default {Write-Warning "Invalid Choice. Try again."
                         sleep -seconds 2
                                 }
 
-         } #switch
-         } While ($True)
+                                                                    } #switch
+   } While ($True)
