@@ -34,7 +34,7 @@ Read-Host -Prompt $menuprompt
 
 $menu=@"
 
-    1. Logged in User
+    1. Logged on User
 
     ============================================
 
