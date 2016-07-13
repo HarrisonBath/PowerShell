@@ -55,18 +55,19 @@ Do{
                 $regkey = $reg.OpenSubKey("SOFTWARE\\Policies\\Microsoft\\Windows NT\\Terminal Services",$true)
                 $regkey.SetValue('fDenyTSConnections','0','DWord')   
                 Write-Host "Enabling Remote Desktop on $Computername...Complete"
-                start-process "C:\Windows\System32\mstsc.exe" -argumentlist "/v:$Computername /f"}
+                start-process "C:\Windows\System32\mstsc.exe" -argumentlist "/v:$Computername /f"
+           }
 
-        "Q" {
+        "Q"   {
                 #Quits Script
                 Write-Host "Goodbye" -ForegroundColor Green
                 Return
-            }
+              }
 
                         Default {Write-Warning "Invalid Choice. Try again."
                         sleep -seconds 2
                                 }
 
-         } #switch
-         } While ($True)
+                                                                    } #switch
+   } While ($True)
                 
