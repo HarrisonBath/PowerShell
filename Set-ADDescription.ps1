@@ -51,15 +51,26 @@ Do{
     Switch (Show-Menu $menu "Harrison's Powershell Script" -clear) {
     
         "1"{
+                
                 #Changes AD Description
                 Import-Module activedirectory
+                
+                try{
+                
                     $COMPUTERNAME = Read-Host -Prompt "Enter Hostname"
-                    $description = Get-ADComputer $computername -Properties description
+                    $description = Get-ADComputer $Computername -Properties description
                     Write-Host "Hostname: $computername | Description: " $description.description -ForegroundColor Green
-                    $description = Read-Host -Prompt "Enter the New AD description"
+                        $description = Read-Host -Prompt "Enter the New AD description"
                         Set-ADComputer $COMPUTERNAME -Description "$description"
                             Write-Host "Please wait while description changes" -ForegroundColor Green
                                 Sleep -seconds 5
+                    } Catch 
+                                    {
+                                        #This part will only come into place, if you type an incorrect hostname in the "try" section
+                                        Write-Host "$Computername not in AD" -foregroundcolor red
+                                            Sleep -seconds 3
+
+                                    }
             }
 
         "Q" {
