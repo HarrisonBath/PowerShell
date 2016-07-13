@@ -50,18 +50,28 @@ Do{
         
     Switch (Show-Menu $menu "Harrison's Powershell Scripts" -clear) {
     
-        "1" {$ComputerName = Read-Host -prompt "Enable Remote Desktop on" 
+        "1" {
+        
+                Try{
 
-                Write-Host "Enabling Remote Desktop on $Computername..."
+                        $ComputerName = Read-Host -prompt "Enable Remote Desktop on"
+                            Write-Host "Enabling Remote Desktop on $Computername..."
+                            $reg = [Microsoft.Win32.RegistryKey]::OpenRemoteBaseKey('LocalMachine', $ComputerName) 
+                            $regkey = $reg.OpenSubKey("SOFTWARE\\Policies\\Microsoft\\Windows NT\\Terminal Services",$true)
+                            $regkey.SetValue('fDenyTSConnections','0','DWord')  
+		                        Write-Host "Remote Desktop is enabled on machine: $ComputerName" -ForegroundColor Green
+	                            start-process "C:\Windows\System32\mstsc.exe" -argumentlist "/v:$Computername /f"
+                                sleep -seconds 5
 
-                $reg = [Microsoft.Win32.RegistryKey]::OpenRemoteBaseKey('LocalMachine', $ComputerName) 
-                $regkey = $reg.OpenSubKey("SOFTWARE\\Policies\\Microsoft\\Windows NT\\Terminal Services",$true)
-                $regkey.SetValue('fDenyTSConnections','0','DWord')  
-		
-                Write-Host "Remote Desktop is enabled on machine: $ComputerName" -ForegroundColor Green
-	            start-process "C:\Windows\System32\mstsc.exe" -argumentlist "/v:$Computername /f"
-                sleep -seconds 5
-                 }
+                    }
+                                    Catch {
+
+                                            #This part will only come into place, if you type an incorrect hostname in the "try" section
+                                            Write-Host "$Computername not in AD" -foregroundcolor red
+                                            Sleep -seconds 3
+                                           }
+
+             }
 
 
         "Q" {Write-Host "Goodbye" -ForegroundColor Green
