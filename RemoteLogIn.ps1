@@ -60,27 +60,27 @@ Do{
                             $regkey = $reg.OpenSubKey("SOFTWARE\\Policies\\Microsoft\\Windows NT\\Terminal Services",$true)
                             $regkey.SetValue('fDenyTSConnections','0','DWord')  
 		                        Write-Host "Remote Desktop is enabled on machine: $ComputerName" -ForegroundColor Green
-	                        	start-process "C:\Windows\System32\mstsc.exe" -argumentlist "/v:$Computername /f"
-                                	sleep -seconds 5
+	                            start-process "C:\Windows\System32\mstsc.exe" -argumentlist "/v:$Computername /f"
+                                sleep -seconds 5
 
                     }
-                                    		Catch {
+                                    Catch {
 
-	                                           	#This part will only come into place, if you type an incorrect hostname in the "try" section
-                                            		Write-Host "$Computername not in AD" -foregroundcolor red
-                                            		Sleep -seconds 3
-                                    		       }
+                                            #This part will only come into place, if you type an incorrect hostname in the "try" section
+                                            Write-Host "$Computername not in AD" -foregroundcolor red
+                                            Sleep -seconds 3
+                                           }
 
              }
 
 
-        "Q" {Write-Host "Goodbye" -ForegroundColor Green
+        "Q"     {Write-Host "Goodbye" -ForegroundColor Green
                 Return
                 }
 
                     Default {Write-Warning "Invalid Choice. Try again."
-                    sleep -seconds 2
-                    }
+                             sleep -seconds 2
+                            }
 
-         } #switch
-         } While ($True)
+                                                                    } #switch
+  } While ($True)
