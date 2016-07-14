@@ -1,4 +1,4 @@
-﻿#LondonDealingRoomSupport
+#LondonDealingRoomSupport
         # File Name      : USBWriteProtect.ps1
         # Author         : Harrison Bath
 
@@ -50,27 +50,32 @@ Do{
         
     Switch (Show-Menu $menu "Harrison's Powershell Script" -clear) {
     
-        "1"{$ComputerName = Read-Host -prompt "Enter hostname" 
+        "1"{
+                Try{
+                    $ComputerName = Read-Host -prompt "Enter hostname" 
+                        Write-Host "Enter hostname $Computername"
+                            $reg = [Microsoft.Win32.RegistryKey]::OpenRemoteBaseKey('LocalMachine', $ComputerName)
+                            $regkey = $reg.OpenSubKey("SYSTEM\\CurrentControlSet\\Control\\StorageDevicePolicies",$true)
+                            $regkey.SetValue('WriteProtect','0','DWord')
+		                        Write-Host "Value in the registry has changed: $ComputerName" -ForegroundColor Green
+                                sleep -seconds 5
+                    }
+                                      Catch{
+                                            #This part will only come into place, if you type an incorrect hostname in the "try" section
+                                            Write-Host "$Computername not in AD" -foregroundcolor red
+                                            Sleep -seconds 3
+                                            }
+            }
 
-            Write-Host "Enter hostname $Computername"
-
-            $reg = [Microsoft.Win32.RegistryKey]::OpenRemoteBaseKey('LocalMachine', $ComputerName) 
-            $regkey = $reg.OpenSubKey("SYSTEM\\CurrentControlSet\\Control\\StorageDevicePolicies",$true)
-            $regkey.SetValue('WriteProtect','0','DWord')  
-		
-            Write-Host "Value in the registry has changed: $ComputerName" -ForegroundColor Green
-            sleep -seconds 5
-         }
-
-        "Q" {
+        "Q"    {
                 #Quits Script
                 Write-Host "Goodbye" -ForegroundColor Green
                 Return
-            }
+               }
 
                         Default {Write-Warning "Invalid Choice. Try again."
                         sleep -seconds 2
                                 }
 
-         } #switch
-         } While ($True)
+                                                                    } #switch
+   } While ($True)
