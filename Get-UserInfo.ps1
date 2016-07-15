@@ -1,4 +1,4 @@
-﻿#LondonDealingRoomSupport
+#LondonDealingRoomSupport
         # File Name      : Get-UserInfo.ps1
         # Author         : Harrison Bath
 
@@ -50,20 +50,29 @@ Do{
         
     Switch (Show-Menu $menu "Harrison's Powershell Script" -clear) {
     
-        "1" { Import-Module activedirectory
+        "1" { 
+                Try{
+                    Import-Module activedirectory
                         $user = Read-Host -Prompt "Please enter the users credentials"
-                        Get-ADUser $user -Properties * | Select CN, SamAccountName, Title, DisplayName, EmployeeNumber, Department, EmailAddress, telephoneNumber, HomeDirectory, ProfilePath, AccountExpirationDate, LastLogonDate, LockedOut, PasswordExpired, PasswordLastSet > "C:\temp\MIDTUser.txt"
-                        Invoke-Item "C:\temp\MIDTUser.txt"  
-                        Write-Host "Your user information is now on your screen" -ForegroundColor Green
-                }
+                            Get-ADUser $user -Properties * | Select CN, SamAccountName, Title, DisplayName, EmployeeNumber, Department, EmailAddress, telephoneNumber, HomeDirectory, ProfilePath, AccountExpirationDate, LastLogonDate, LockedOut, PasswordExpired, PasswordLastSet > "C:\temp\MIDTUser.txt"
+                                Invoke-Item "C:\temp\MIDTUser.txt"  
+                                Write-Host "Your user information is now on your screen" -ForegroundColor Green
+                    }Catch 
+                                            {
+                                            #This part will only come into place, if you type an incorrect hostname in the "try" section
+                                                Write-Host "$user : Incorrect Log-In ID" -foregroundcolor red
+                                                    Sleep -seconds 3
+                                            }
+
+             }
                 
-        "Q" {Write-Host "Goodbye" -ForegroundColor Green
+        "Q"     {Write-Host "Goodbye" -ForegroundColor Green
                 Return
                 }
 
                     Default {Write-Warning "Invalid Choice. Try again."
                     sleep -seconds 2
-                    }
+                            }
 
-         } #switch
-         } While ($True)
+                                                                    } #switch
+   } While ($True)
