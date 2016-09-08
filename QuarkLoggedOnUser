@@ -1,0 +1,138 @@
+#LondonDealingRoomSupport
+        # File Name      : Quark Logged On User.ps1
+        # Author         : Harrison Bath
+
+Function Show-Menu {
+
+Param(
+[Parameter(Position=0,Mandatory=$True,HelpMessage="Enter your menu text")]
+[ValidateNotNullOrEmpty()]
+[string]$Menu,
+[Parameter(Position=1)]
+[ValidateNotNullOrEmpty()]
+[string]$Title="Menu",
+[switch]$ClearScreen
+)
+
+if ($ClearScreen) {Clear-Host}
+
+#build the menu prompt
+$menuPrompt=$title
+#add a return
+$menuprompt+="`n"
+#add an underline
+$menuprompt+="-"*$title.Length
+$menuprompt+="`n"
+#add the menu
+$menuPrompt+=$menu
+
+
+Read-Host -Prompt $menuprompt
+
+} #end function
+#Enter the menu below...
+
+$menu=@"
+    
+    1. Quark Logged on User (PROD ONLY)
+
+    ============================================
+    
+    Q. Quit
+
+Select a task by number or Q to exit
+"@
+
+#Looping and running menu until user quits
+
+Do{
+        #use a Switch construct to take action depending on what menu choice is selected.
+        
+    Switch (Show-Menu $menu "London Dealing Room Support" -clear) 
+    {
+    
+        "1"
+
+
+        {Import-Module activedirectory
+            $colcomputers =Get-content "\\LOND121718\C`$\TEMP\Quark.txt"
+            #$colComputers = "LOND130465", "LOND130555"
+            #$colComputers = Get-ADComputer -Filter{((name-like *LOND*))} -Properties description | ForEach-Object {$_.Name}
+                 
+            $MyPCCol = @()
+            Write-host "Please wait while csv file is created..." -ForegroundColor Green
+        foreach ($strComputer in $colComputers)
+                {
+        Try
+                    {
+
+                        $MyObj = "" | Select Computername, Username, Description
+                        $ADComputer = Get-ADComputer $strComputer -Properties Description
+                        
+
+                        if(Test-Connection -ComputerName $strComputer -Count 1 -quiet)
+                       
+                            {
+                                $Processes = Get-WmiObject -class win32_process -computer $strComputer -Filter "Name = 'explorer.exe'"
+                                #Go through collection of processes
+                                $username = $null
+                                ForEach ($Process in $Processes) 
+                                    {
+                                        $Username = ($Process.GetOwner()).User
+                                        if($Username -ne $null)
+                                        {
+                                        break
+                                        }
+                                    }
+                                            if($username -ne $null) 
+                                            #Write-Host $strComputer $username " | Description: " $description.description -ForegroundColor Green
+                                                {
+                                                $MyObj.Computername = $strcomputer
+                                                $MyObj.username = $Username
+                                                $MyObj.Description = $ADComputer.description
+                                                }
+        Else
+                                                #$description = Get-ADComputer $strComputer -Properties description
+                                                #Write-Host "Nobody logged in on $StrComputer | Description: " $description.description -ForegroundColor Red}
+                                                    {
+                                                    $MyObj.Computername = $strcomputer
+                                                    $MyObj.username = "Nobody logged in"
+                                                    $MyObj.Description = $ADComputer.description
+                                                    }
+                            }
+        Else
+                                                        {
+                                                        $MyObj.Computername = $strcomputer
+                                                        $MyObj.username = "Offline"
+                                                     ,  $MyObj.Description = $ADComputer.description
+                                                        }
+                
+                    } #end try
+        Catch
+                                                            {
+                                                            $MyObj.Computername = $strComputer
+                                                            $MyObj.Description = "Not in AD"
+                                                            $MyObj.Username = $null
+                                                            }
+                            
+                                                                $MyPCCol += $MyObj 
+
+                } #end catch
+
+                                                                    $MyPCCol | Export-Csv -Path "\\LOND121718\C`$\TEMP\Quark.csv" -NoTypeInformation
+                                                                    Invoke-Item "\\LOND121718\C`$\TEMP\Quark.csv"
+                                                                    $ErrorActionPreference = "Stop"
+
+        } #End of Menu 1
+                
+        
+             "Q" {Write-Host "Goodbye" -ForegroundColor Green
+                    Return
+                 }
+
+                    Default {Write-Warning "Invalid Choice. Try again."
+                            sleep -seconds 2
+                            }
+
+    } #switch
+  } While ($True)
